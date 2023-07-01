@@ -57,6 +57,7 @@ export default function Home({ messages }) {
   const [sortAlpha, setSortAlpha] = useState("a-z"); // Holds the sorting alpha value
   const [searchTerm, setSearchTerm] = useState(""); // Holds the search term value
   const [currentPage, setCurrentPage] = useState(1); // Holds the current page number
+  
 
   // Define the function for sorting messages
   const sortMessages = () => {
@@ -319,6 +320,7 @@ export default function Home({ messages }) {
           <div class="flex justify-center">
             {/* Button for toggling the sort order */}
             <button
+              disabled={messages.length === 0} // disabled when there's no msg in array
               onClick={toggleSortOrder}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3"
             >
@@ -328,6 +330,7 @@ export default function Home({ messages }) {
 
             {/* Button for sorting messages */}
             <button
+              disabled={messages.length === 0} // disabled when there's no msg in array
               onClick={sortMessages}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-xs font-medium rounded-lg px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
@@ -341,6 +344,7 @@ export default function Home({ messages }) {
             className="searchBox text-center mb-5"
           >
             <input
+              disabled={messages.length === 0} // disabled when there's no msg in array
               className="search_input w-full sm:w-64 md:w-72 bg-gray-100 text-gray-800 rounded-md py-2 px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
               placeholder="Search Messages here..."
@@ -364,17 +368,17 @@ export default function Home({ messages }) {
                 setLoading(true);
                 const newMessage = editState
                   ? {
-                      id: selectedId,
-                      no: messages[messages.length - 1].no,
-                      text: messageText,
-                    }
+                    id: selectedId,
+                    no: messages[messages.length - 1].no,
+                    text: messageText,
+                  }
                   : {
-                      no:
-                        messages.length !== 0
-                          ? messages[messages.length - 1].no + 1
-                          : 1,
-                      text: messageText,
-                    };
+                    no:
+                      messages.length !== 0
+                        ? messages[messages.length - 1].no + 1
+                        : 1,
+                    text: messageText,
+                  };
                 editState
                   ? editMessageHandler(newMessage)
                   : addMessageHandler(newMessage);
@@ -539,9 +543,8 @@ export default function Home({ messages }) {
               <button
                 key={index}
                 onClick={() => handlePageChange(index + 1)}
-                className={`bg-gray-700 text-white text-sm py-1 px-3 rounded-md hover:bg-gray-800 ${
-                  currentPage === index + 1 ? "bg-gray-800" : ""
-                }`}
+                className={`bg-gray-700 text-white text-sm py-1 px-3 rounded-md hover:bg-gray-800 ${currentPage === index + 1 ? "bg-gray-800" : ""
+                  }`}
               >
                 {index + 1}
               </button>
