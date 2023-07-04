@@ -302,15 +302,15 @@ export default function Home({ messages }) {
         />
       </div>
 
-      <div className="w-full min-h-screen flex flex-col my-4 justify-center items-center">
+      <div className="w-full min-h-screen mt-10 flex flex-col my-4 justify-center items-center">
         <div className="h-10 text-white w-full flex justify-center items-center">
           <h1 className=" text-black font-serif text-3xl font-bold">
-            Crud App (Next.js + MySql)
+            OctDaily Internship Program <br />
+            &nbsp;&nbsp;Crud App (Next.js + MySql)
           </h1>
         </div>
-        <p className="text-[#0110e5] font-semibold font-sans text-xl text-center">
-          A create-read-update-delete app where you can made changes to the
-          database through the UI!
+        <p className="text-[#0110e5] font-semibold mt-6 font-sans text-xl text-center">
+         &quot;Experience the Power of CRUD: Seamlessly Manage Your Messages with our Interactive App!&quot;
         </p>
         <div className="bg-[#FF7417] w-[90%] md:w-[80%] lg:w-[75%] xl:w-[70%] p-4 mt-3 rounded-md flex flex-col items-center justify-around">
           <span className="text-[#0110e5] mb-3 w-full font-serif font-extrabold text-center px-3 py-1 rounded-sm shadow-sm bg-gray-200 text-3xl">
@@ -324,7 +324,7 @@ export default function Home({ messages }) {
               onClick={toggleSortOrder}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3"
             >
-              Toggle Sort Order:{" "}
+              Toggle Sort :{" "}
               {sortOrder === "asc" ? "Older First" : "Recent First"}
             </button>
 
@@ -334,7 +334,7 @@ export default function Home({ messages }) {
               onClick={sortMessages}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-xs font-medium rounded-lg px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Sort {sortAlpha === "a-z" ? "A-Z" : "Z-A"}
+             Toggle Sort : {sortAlpha === "a-z" ? "A-Z" : "Z-A"}
             </button>
           </div>
 
@@ -358,7 +358,7 @@ export default function Home({ messages }) {
             placeholder="Enter a message"
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
-            className="w-full h-[5rem] font-serif bg-gray-100 border mt-3 align-top placeholder:text-sm p-1 text-sm focus:outline-gray-800 rounded border-gray-600 "
+            className="w-full h-[5rem] font-serif bg-gray-100 border  align-top placeholder:text-sm p-1 text-sm focus:outline-gray-800 rounded border-gray-600 "
           />
           <div className="mt-3">
             {/* Button for creating a new message */}
@@ -388,7 +388,7 @@ export default function Home({ messages }) {
               disabled={!messageText} // Add the disabled attribute based on the messageText value
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Create New Message!
+              {editState ? "Edit Message" : "Create New Message"}
             </button>
 
             {/* Cancel button for editing mode */}
@@ -398,9 +398,9 @@ export default function Home({ messages }) {
                   setEditState(false);
                   setMessageText("");
                 }}
-                className="bg-[#E50914] text-white mt-1 text-sm py-1 w-full sm:w-[10rem] rounded-md sm:ml-1 hover:bg-[#cf0b14]"
+                className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-3 px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3 hover:bg-[#cf0b14] bg-[#E50914]"
               >
-                cancel
+                Cancel
               </button>
             )}
           </div>
