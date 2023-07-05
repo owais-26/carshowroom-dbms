@@ -57,7 +57,16 @@ export default function Home({ messages }) {
   const [sortAlpha, setSortAlpha] = useState("a-z"); // Holds the sorting alpha value
   const [searchTerm, setSearchTerm] = useState(""); // Holds the search term value
   const [currentPage, setCurrentPage] = useState(1); // Holds the current page number
-  
+  const [showFullText, setShowFullText] = useState(false); //holds sliced text
+  const [expandedMessages, setExpandedMessages] = useState([]);
+
+  const toggleExpand = (messageId) => {
+    if (expandedMessages.includes(messageId)) {
+      setExpandedMessages(expandedMessages.filter((id) => id !== messageId));
+    } else {
+      setExpandedMessages([...expandedMessages, messageId]);
+    }
+  };
 
   // Define the function for sorting messages
   const sortMessages = () => {
@@ -298,18 +307,22 @@ export default function Home({ messages }) {
           src="/crud.png"
           width={150}
           height={100}
-          className="-mb-10 -mt-5"
+          className="-mb-12 -mt-5"
         />
       </div>
 
       <div className="w-full min-h-screen mt-10 flex flex-col my-4 justify-center items-center">
-        <div className="h-10 text-white w-full flex justify-center items-center">
-          <h1 className=" text-black font-serif text-3xl font-bold">
+        {/* <div className="h-10 text-white w-full flex justify-center items-center">
+        </div> */}
+          <h1 className=" text-black text-center mb-1 font-serif text-3xl font-bold">
             OctDaily Internship Program <br />
-            &nbsp;&nbsp;Crud App (Next.js + MySql)
+            
           </h1>
-        </div>
-        <p className="text-[#0110e5] font-semibold mt-6 font-sans text-xl text-center">
+        <h2 className=" text-black text-center font-serif text-2xl font-bold">
+            Crud App (Next.js + MySql)
+            
+          </h2>
+        <p className="text-[#0110e5] px-2 font-semibold mt-2 font-sans text-xl text-center">
          &quot;Experience the Power of CRUD: Seamlessly Manage Your Messages with our Interactive App!&quot;
         </p>
         <div className="bg-[#FF7417] w-[90%] md:w-[80%] lg:w-[75%] xl:w-[70%] p-4 mt-3 rounded-md flex flex-col items-center justify-around">
@@ -405,17 +418,17 @@ export default function Home({ messages }) {
             )}
           </div>
           {/* Renders a table to display the messages */}
-          <table className="bg-gray-800 w-full mt-3 rounded-sm">
-            <thead className="text-sm md:text-base text-white w-full border-b-white border-b-2">
-              <tr>
-                <th className="font-serif">#</th>
-                <th className="font-serif">Message</th>
-                <th className="font-serif">ID</th>
-                <th className="font-serif">Edit</th>
-                <th className="font-serif">Remove</th>
+          <table className="bg-gray-800 w-full mt-3  rounded-sm">
+            <thead className="text-sm md:text-base text-white w-full">
+              <tr className=" border-t-white border-t-2">
+                <th className="font-serif  border-r-white border-r-2  border-l-white border-l-2">#</th>
+                <th className="font-serif  border-r-white border-r-2 border-b-white border-b-2">Message</th>
+                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">ID</th>
+                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">Edit</th>
+                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">Remove</th>
               </tr>
             </thead>
-            <tbody className="text-[0.8rem]  text-gray-200 overflow-y-auto  md:text-[0.94rem] w-full text-center ">
+            <tbody className="text-[0.8rem] tableFont border-white border-2  text-gray-200 overflow-y-auto  md:text-[0.94rem]  text-center ">
               {/* Filters and maps the displayedMessages */}
               {displayedMessages &&
                 displayedMessages
@@ -434,18 +447,26 @@ export default function Home({ messages }) {
                   })
                   .map((message) => (
                     <tr key={message.id}>
-                      <td>{message.no}</td>
-                      <td>
-                        {message.text.length > 10
-                          ? `${message.text.slice(0, 9)}...`
-                          : message.text}
+                      <td className="flex p-1   border-t-white border-t-2 py-2 pl-2 ">{message.no}</td>
+                      <td className="text-left p-1 w-3/4 py-2 px-2 border-l-white border-l-2 border-b-white border-b-2">
+                        {message.text.length > 25 && !expandedMessages.includes(message.id) ? (
+                          <>
+                            {`${message.text.slice(0, 60)}...... `}
+                            <button className="text-[#FF7417] font-bold  italic" onClick={() => toggleExpand(message.id)}>See More</button>
+                          </>
+                        ) : (
+                          <>
+                            {message.text}
+                            {expandedMessages.includes(message.id) && (
+                                <button className="text-[#FF7417]  italic font-bold" onClick={() => toggleExpand(message.id)}>&nbsp;See Less</button>
+                            )}
+                          </>
+                        )}
                       </td>
-                      <td>
-                        {width < 640
-                          ? `${message.id.slice(0, 3)}...`
-                          : message.id}
+                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2">
+                        {message.id}
                       </td>
-                      <td>
+                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2">
                         <MdModeEditOutline
                           style={{
                             margin: "auto",
@@ -459,7 +480,7 @@ export default function Home({ messages }) {
                           }}
                         />
                       </td>
-                      <td>
+                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2 border-r-white border-r-2">
                         <AiFillDelete
                           style={{
                             margin: "auto",
