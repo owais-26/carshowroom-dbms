@@ -17,6 +17,7 @@ import { CircularProgress } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
+import { Download, DownloadDone, DownloadDoneOutlined } from "@mui/icons-material";
 const style = {
   position: "absolute", // Set the position of the modal
   top: "50%", // Set the top position of the modal
@@ -57,7 +58,7 @@ export default function Home({ messages }) {
   const [sortAlpha, setSortAlpha] = useState("a-z"); // Holds the sorting alpha value
   const [searchTerm, setSearchTerm] = useState(""); // Holds the search term value
   const [currentPage, setCurrentPage] = useState(1); // Holds the current page number
-  const [showFullText, setShowFullText] = useState(false); //holds sliced text
+ 
   const [expandedMessages, setExpandedMessages] = useState([]);
 
   const toggleExpand = (messageId) => {
@@ -303,6 +304,7 @@ export default function Home({ messages }) {
       />
       <div className="flex flex-col  items-center">
         <Image
+          priority
           alt="Logo"
           src="/crud.png"
           width={150}
@@ -325,12 +327,18 @@ export default function Home({ messages }) {
         <p className="text-[#0110e5] px-2 font-semibold mt-2 font-sans text-xl text-center">
          &quot;Experience the Power of CRUD: Seamlessly Manage Your Messages with our Interactive App!&quot;
         </p>
+        <button
+
+          className=" mt-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3"
+        >
+          <a className="text-white text-md " download href={'CRUD App Documentation.pdf'}><Download/>  Documentation</a>
+        </button>
         <div className="bg-[#FF7417] w-[90%] md:w-[80%] lg:w-[75%] xl:w-[70%] p-4 mt-3 rounded-md flex flex-col items-center justify-around">
           <span className="text-[#0110e5] mb-3 w-full font-serif font-extrabold text-center px-3 py-1 rounded-sm shadow-sm bg-gray-200 text-3xl">
             Messages
           </span>
-
-          <div class="flex justify-center">
+          
+          <div className="flex justify-center">
             {/* Button for toggling the sort order */}
             <button
               disabled={messages.length === 0} // disabled when there's no msg in array
