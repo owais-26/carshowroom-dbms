@@ -7,7 +7,7 @@ export default function Document() {
       {" "}
       {/* Set the language of the document */}
       <Head /> {/* Include the head section of the document */}
-      <body className="bg-slate-400">
+      <body className="bg-white-400">
         {" "}
         {/* Set the background color of the body */}
         <Main /> {/* Render the main content */}

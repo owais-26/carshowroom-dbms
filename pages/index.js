@@ -18,6 +18,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import { Download, DownloadDone, DownloadDoneOutlined } from "@mui/icons-material";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import Banner from "../components/Banner";
 const style = {
   position: "absolute", // Set the position of the modal
   top: "50%", // Set the top position of the modal
@@ -27,9 +30,9 @@ const style = {
   boxShadow: 24, // Set the box shadow of the modal
 };
 
-const getMessages = async () => {
+const getCustomers = async () => {
   return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM messages", (error, results) => {
+    db.query("SELECT * FROM customer", (error, results) => {
       if (error) {
         reject(error); // Reject the promise with the error if there is one
       } else {
@@ -38,6 +41,7 @@ const getMessages = async () => {
     });
   });
 };
+
 
 const PAGE_SIZE = 5; // Defines the size of page for pagination
 
@@ -48,559 +52,130 @@ export default function Home({ messages }) {
   const router = useRouter();
 
   // Declare and initialize state variables
-  const [width, setWidth] = useState(0); // Holds the width value
   const [editState, setEditState] = useState(false); // Indicates the edit state
-  const [messageText, setMessageText] = useState(""); // Holds the text of the message
   const [selectedId, setSelectedId] = useState(0); // Holds the ID of the selected item
   const [open, setOpen] = useState(false); // Indicates the open state of a modal or dialog
   const [loading, setLoading] = useState(false); // Indicates the loading state
   const [sortOrder, setSortOrder] = useState("asc"); // Holds the sorting order
-  const [sortAlpha, setSortAlpha] = useState("a-z"); // Holds the sorting alpha value
   const [searchTerm, setSearchTerm] = useState(""); // Holds the search term value
   const [currentPage, setCurrentPage] = useState(1); // Holds the current page number
- 
-  const [expandedMessages, setExpandedMessages] = useState([]);
 
-  const toggleExpand = (messageId) => {
-    if (expandedMessages.includes(messageId)) {
-      setExpandedMessages(expandedMessages.filter((id) => id !== messageId));
-    } else {
-      setExpandedMessages([...expandedMessages, messageId]);
+  const addCustomerHandler = async (enteredCustomer) => {
+    try {
+      // Send a POST request to the "/api/new-customer" endpoint with the entered customer data
+      const response = await fetch("/api/new-customer", {
+        method: "POST",
+        body: JSON.stringify(enteredCustomer),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Parse the response data as JSON
+      const data = await response.json();
+      console.log(data);
+
+      // Redirect to the home page ("/")
+      router.push("/");
+
+      // Set loading state to false
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  // Define the function for sorting messages
-  const sortMessages = () => {
-    // Check the current sorting alpha value
-    if (sortAlpha === "a-z") {
-      // Display success toast notification for sorting A-Z
-      toast.success("Sorted A-Z Successfully! ", {
-        position: "bottom-left",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+  // Define the editCustomerHandler function for editing a customer
+  const editCustomerHandler = async (enteredCustomer) => {
+    try {
+      // Send a POST request to the "/api/edit-customer" endpoint with the entered customer data
+      const response = await fetch("/api/edit-customer", {
+        method: "POST",
+        body: JSON.stringify(enteredCustomer),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      // Sort the messages array in ascending order based on the text property
-      messages.sort((a, b) => {
-        const textA = a.text.toLowerCase();
-        const textB = b.text.toLowerCase();
+      // Parse the response data as JSON
+      const data = await response.json();
+      console.log(data);
 
-        return textA.localeCompare(textB);
-      });
-    } else {
-      // Display success toast notification for sorting Z-A
-      toast.success("Sorted Z-A Successfully! ", {
-        position: "bottom-left",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      // Redirect to the home page ("/")
+      router.push("/");
 
-      // Sort the messages array in descending order based on the text property
-      messages.sort((a, b) => {
-        const textA = a.text.toLowerCase();
-        const textB = b.text.toLowerCase();
-
-        return textB.localeCompare(textA);
-      });
+      // Set loading state to false
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
-
-    // Toggle the sorting alpha value between "a-z" and "z-a"
-    setSortAlpha(sortAlpha === "a-z" ? "z-a" : "a-z");
   };
 
-  // Calculate the start and end index for the displayed messages on the current page
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const endIndex = startIndex + PAGE_SIZE;
-
-  // Get the subset of messages to be displayed on the current page
-  const displayedMessages = messages.slice(startIndex, endIndex);
-
-  // Define the function for handling the previous page navigation
-  const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  // Define the function for handling the next page navigation
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  // Define the function for handling page changes
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Calculate the total number of pages based on the messages count and page size
-  const totalPages = Math.ceil(messages.length / PAGE_SIZE);
-
-  // Define the function for toggling the sort order
-  const toggleSortOrder = () => {
-    if (sortOrder === "asc") {
-      // Display success toast notification for showing older messages first
-      toast.success("Showing Older First ", {
-        position: "bottom-left",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+  // Define the deleteCustomerHandler function for deleting a customer
+  const deleteCustomerHandler = async (customerId) => {
+    try {
+      // Send a POST request to the "/api/delete-customer" endpoint with the customer ID
+      const response = await fetch("/api/delete-customer", {
+        method: "POST",
+        body: JSON.stringify({ CustomerID: customerId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      // Sort the messages array in ascending order based on the 'no' property
-      messages.sort((a, b) => a.no - b.no);
-    } else {
-      // Display success toast notification for showing newer messages first
-      toast.success("Showing Newer First ", {
-        position: "bottom-left",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      // Parse the response data as JSON
+      const data = await response.json();
+      console.log(data);
 
-      // Sort the messages array in descending order based on the 'no' property
-      messages.sort((a, b) => b.no - a.no);
+      // Redirect to the home page ("/")
+      router.push("/");
+
+      // Set loading state to false
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
-
-    // Toggle the sort order between "asc" and "desc"
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
-  useEffect(() => {
-    setWidth(window.innerWidth); // Set the initial width value to the window's inner width
-    // sortMessages(); // Call the sortMessages function (commented out in the provided code)
-  }, []);
 
-  // Define the addMessageHandler function for adding a new message
-  const addMessageHandler = async (enteredMessage) => {
-    // Send a POST request to the "/api/new-message" endpoint with the entered message data
-    const response = await fetch("/api/new-message", {
-      method: "POST",
-      body: JSON.stringify(enteredMessage),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Parse the response data as JSON
-    const data = await response.json();
-    console.log(data);
-
-    // Redirect to the home page ("/")
-    router.push("/");
-
-    // Set loading state to false
-    setLoading(false);
-
-    // Display success toast notification for message addition
-    toast.success("Message Added Successfully! ", {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-
-  // Define the editMessageHandler function for editing a message
-  const editMessageHandler = async (enteredMessage) => {
-    // Send a POST request to the "/api/edit-message" endpoint with the entered message data
-    const response = await fetch("/api/edit-message", {
-      method: "POST",
-      body: JSON.stringify(enteredMessage),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Parse the response data as JSON
-    const data = await response.json();
-    console.log(data);
-
-    // Redirect to the home page ("/")
-    router.push("/");
-
-    // Set loading state to false
-    setLoading(false);
-
-    // Display success toast notification for message editing
-    toast.success("Message Edited Successfully! ", {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-
-  // Define the deleteMessageHandler function for deleting a message
-  const deleteMessageHandler = async (id) => {
-    // Send a POST request to the "/api/delete-message" endpoint with the message ID
-    const response = await fetch("/api/delete-message", {
-      method: "POST",
-      body: JSON.stringify(id),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // Parse the response data as JSON
-    const data = await response.json();
-    console.log(data);
-
-    // Redirect to the home page ("/")
-    router.push("/");
-
-    // Set loading state to false
-    setLoading(false);
-
-    // Display success toast notification for message deletion
-    toast.success("Message Deleted Successfully! ", {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
 
   return (
-    <>
-      <ToastContainer
-        position="bottom-left"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <div className="flex flex-col  items-center">
-        <Image
-          priority
-          alt="Logo"
-          src="/crud.png"
-          width={150}
-          height={100}
-          className="-mb-12 -mt-5"
-        />
-      </div>
-
-      <div className="w-full min-h-screen mt-10 flex flex-col my-4 justify-center items-center">
-        {/* <div className="h-10 text-white w-full flex justify-center items-center">
-        </div> */}
-          <h1 className=" text-black text-center mb-1 font-serif text-3xl font-bold">
-            OctDaily Internship Program <br />
-            
-          </h1>
-        <h2 className=" text-black text-center font-serif text-2xl font-bold">
-            Crud App (Next.js + MySql)
-            
-          </h2>
-        <p className="text-[#0110e5] px-2 font-semibold mt-2 font-sans text-xl text-center">
-         &quot;Experience the Power of CRUD: Seamlessly Manage Your Messages with our Interactive App!&quot;
-        </p>
-        <button
-
-          className=" mt-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3"
-        >
-          <a className="text-white text-md " download href={'CRUD App Documentation.pdf'}><Download/>  Documentation</a>
-        </button>
-        <div className="bg-[#FF7417] w-[90%] md:w-[80%] lg:w-[75%] xl:w-[70%] p-4 mt-3 rounded-md flex flex-col items-center justify-around">
-          <span className="text-[#0110e5] mb-3 w-full font-serif font-extrabold text-center px-3 py-1 rounded-sm shadow-sm bg-gray-200 text-3xl">
-            Messages
-          </span>
-          
-          <div className="flex justify-center">
-            {/* Button for toggling the sort order */}
-            <button
-              disabled={messages.length === 0} // disabled when there's no msg in array
-              onClick={toggleSortOrder}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3"
-            >
-              Toggle Sort :{" "}
-              {sortOrder === "asc" ? "Older First" : "Recent First"}
-            </button>
-
-            {/* Button for sorting messages */}
-            <button
-              disabled={messages.length === 0} // disabled when there's no msg in array
-              onClick={sortMessages}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-xs font-medium rounded-lg px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-             Toggle Sort : {sortAlpha === "a-z" ? "A-Z" : "Z-A"}
-            </button>
-          </div>
-
-          <div
-            data-aos="fade-up"
-            data-aos-duration="2200"
-            className="searchBox text-center mb-5"
-          >
-            <input
-              disabled={messages.length === 0} // disabled when there's no msg in array
-              className="search_input w-full sm:w-64 md:w-72 bg-gray-100 text-gray-800 rounded-md py-2 px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              placeholder="Search Messages here..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-            />
-          </div>
-          <textarea
-            type="text"
-            placeholder="Enter a message"
-            value={messageText}
-            onChange={(event) => setMessageText(event.target.value)}
-            className="w-full h-[5rem] font-serif bg-gray-100 border  align-top placeholder:text-sm p-1 text-sm focus:outline-gray-800 rounded border-gray-600 "
-          />
-          <div className="mt-3">
-            {/* Button for creating a new message */}
-            <button
-              onClick={(event) => {
-                event.preventDefault();
-                setLoading(true);
-                const newMessage = editState
-                  ? {
-                    id: selectedId,
-                    no: messages[messages.length - 1].no,
-                    text: messageText,
-                  }
-                  : {
-                    no:
-                      messages.length !== 0
-                        ? messages[messages.length - 1].no + 1
-                        : 1,
-                    text: messageText,
-                  };
-                editState
-                  ? editMessageHandler(newMessage)
-                  : addMessageHandler(newMessage);
-                setMessageText("");
-                setEditState(false);
-              }}
-              disabled={!messageText} // Add the disabled attribute based on the messageText value
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              {editState ? "Edit Message" : "Create New Message"}
-            </button>
-
-            {/* Cancel button for editing mode */}
-            {editState && (
-              <button
-                onClick={() => {
-                  setEditState(false);
-                  setMessageText("");
-                }}
-                className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-3 px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 mb-3 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mr-3 hover:bg-[#cf0b14] bg-[#E50914]"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-          {/* Renders a table to display the messages */}
-          <table className="bg-gray-800 w-full mt-3  rounded-sm">
-            <thead className="text-sm md:text-base text-white w-full">
-              <tr className=" border-t-white border-t-2">
-                <th className="font-serif  border-r-white border-r-2  border-l-white border-l-2">#</th>
-                <th className="font-serif  border-r-white border-r-2 border-b-white border-b-2">Message</th>
-                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">ID</th>
-                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">Edit</th>
-                <th className="font-serif p-1 border-r-white border-r-2 border-b-white border-b-2">Remove</th>
-              </tr>
-            </thead>
-            <tbody className="text-[0.8rem] tableFont border-white border-2  text-gray-200 overflow-y-auto  md:text-[0.94rem]  text-center ">
-              {/* Filters and maps the displayedMessages */}
-              {displayedMessages &&
-                displayedMessages
-                  .filter((val) => {
-                    const searchTermLowerCase = searchTerm.toLowerCase();
-                    const textLowerCase = val.text.toLowerCase();
-
-                    if (searchTerm === "") {
-                      return true; // Return all values when search term is empty
-                    } else if (textLowerCase.includes(searchTermLowerCase)) {
-                      // Return the value with highlighted text when search term is found
-                      return true;
-                    }
-
-                    return false; // Exclude the value when search term is not found
-                  })
-                  .map((message) => (
-                    <tr key={message.id}>
-                      <td className="flex p-1   border-t-white border-t-2 py-2 pl-2 ">{message.no}</td>
-                      <td className="text-left p-1 w-3/4 py-2 px-2 border-l-white border-l-2 border-b-white border-b-2">
-                        {message.text.length > 25 && !expandedMessages.includes(message.id) ? (
-                          <>
-                            {`${message.text.slice(0, 60)}...... `}
-                            <button className="text-[#FF7417] font-bold  italic" onClick={() => toggleExpand(message.id)}>See More</button>
-                          </>
-                        ) : (
-                          <>
-                            {message.text}
-                            {expandedMessages.includes(message.id) && (
-                                <button className="text-[#FF7417]  italic font-bold" onClick={() => toggleExpand(message.id)}>&nbsp;See Less</button>
-                            )}
-                          </>
-                        )}
-                      </td>
-                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2">
-                        {message.id}
-                      </td>
-                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2">
-                        <MdModeEditOutline
-                          style={{
-                            margin: "auto",
-                            cursor: "pointer",
-                          }}
-                          className="hover:text-green-500"
-                          onClick={() => {
-                            setMessageText(message.text);
-                            setEditState(true);
-                            setSelectedId(message.id);
-                          }}
-                        />
-                      </td>
-                      <td className=" p-1 border-l-white border-l-2 border-b-white border-b-2 border-r-white border-r-2">
-                        <AiFillDelete
-                          style={{
-                            margin: "auto",
-                            cursor: "pointer",
-                          }}
-                          className="hover:text-red-500"
-                          onClick={() => {
-                            setOpen(true);
-                            setSelectedId(message.id);
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
-
-          {/* Renders a modal for confirming message deletion */}
-          <Modal
-            open={open}
-            onClose={() => setOpen(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style} className="rounded-md p-4">
-              <p>Do you want to delete this message?</p>
-              <div className="flex justify-center mt-3">
-                <button
-                  onClick={() => {
-                    setLoading(true);
-                    deleteMessageHandler(selectedId);
-                    setOpen(false);
-                    setEditState(false);
-                    setMessageText("");
-                  }}
-                  className="bg-[#E50914] text-white text-sm py-1 px-3 rounded-md ml-1 hover:bg-[#cf0b14]"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="bg-gray-700 text-white text-sm py-1 px-3 rounded-md ml-1 hover:bg-gray-800"
-                >
-                  Cancel
-                </button>
-              </div>
-            </Box>
-          </Modal>
-
-          {loading && (
-            <Modal open>
-              <div className="w-full flex justify-center h-full items-center">
-                <CircularProgress thickness={4} />
-              </div>
-            </Modal>
-          )}
-        </div>
-        {/* Renders pagination controls */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mt-8">
-          <div className="flex gap-2">
-            {/* Button for previous page */}
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-              className="bg-gray-700 text-white text-sm py-1 px-3 rounded-md hover:bg-gray-800"
-            >
-              Previous
-            </button>
-            {/* Button for next page */}
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className="bg-gray-700 text-white text-sm py-1 px-3 rounded-md hover:bg-gray-800"
-            >
-              Next
-            </button>
-          </div>
-          <div className="flex gap-1">
-            {/* Render buttons for each page */}
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`bg-gray-700 text-white text-sm py-1 px-3 rounded-md hover:bg-gray-800 ${currentPage === index + 1 ? "bg-gray-800" : ""
-                  }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
+  <>
+    <Navbar/>
+    <Banner/>
+    <Hero/>
+  </>
   );
 }
 
 export const getServerSideProps = async () => {
-  // Fetch messages from the server
-  const messages = await getMessages();
+  try {
+    // Fetch customers from the server
+    const customers = await getCustomers();
 
-  // Map the messages to the required format
-  const formattedMessages = messages.map((message) => ({
-    id: message.id.toString(),
-    no: message.no,
-    text: message.text,
-  }));
+    // Map the customers to the required format
+    const formattedCustomers = customers.map((customer) => ({
+      CustomerID: customer.CustomerID.toString(),
+      CustomerName: customer.CustomerName,
+      Age: customer.Age,
+      Gender: customer.Gender,
+      MobileNo: customer.MobileNo,
+    }));
 
-  // Return the messages as props
-  return {
-    props: {
-      messages: formattedMessages,
-    },
-  };
+    // Return the customers as props
+    return {
+      props: {
+        customers: formattedCustomers,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        customers: [], // Return an empty array if there's an error
+      },
+    };
+  }
 };
+
 

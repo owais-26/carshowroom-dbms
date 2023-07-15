@@ -1,23 +1,22 @@
-//  /api/delete-message
-
-//UTILS
+// UTILS
 import db from '../../utils/connectDB';
 
 const handler = async (req, res) => {
   // Check if the HTTP method is POST
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     try {
-      console.log(req.body); // Log the request body
+      const CustomerID = req.body.CustomerID;
 
-      // Construct the DELETE query with the given ID
-      const query = `DELETE FROM messages WHERE id = ${req.body};`;
+      
+      // Construct the DELETE query to delete the customer with the given CustomerID
+      const query = `DELETE FROM Customer WHERE CustomerID = ${CustomerID};`;
 
       // Execute the query using the database connection
       db.query(query, (error, result) => {
         if (error) {
           throw error; // Throw an error if the query execution fails
         } else {
-          res.send({ status: "success", result }); // Send a success response with the result
+          res.send({ status: 'success', result }); // Send a success response with the result
         }
       });
     } catch (error) {
