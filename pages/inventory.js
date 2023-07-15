@@ -11,24 +11,24 @@ const Inventory = () => {
                 </div>
                 <div >
 
-                    <div class="container mx-auto px-4">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                    <div className="container mx-auto px-4">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Type</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration No</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Type</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration No</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white divide-y divide-gray-200">
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">1</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Car Part</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">10</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Engine Oil</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">ABC123</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">1</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">Car Part</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">10</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">Engine Oil</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">ABC123</td>
                                 </tr>
                             </tbody>
                         </table>
